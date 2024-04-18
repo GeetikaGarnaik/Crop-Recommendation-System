@@ -1,34 +1,44 @@
-module ops_module
 
-  abstract interface
-    subroutine op(x, y, z)
-      integer, intent(in) :: x, y
-      integer, intent(out) :: z
-    end subroutine
-  end interface
+subroutine foo(a, n, m, b)
+  implicit none
 
-contains
+  real, intent(in) :: a(n, m)
+  integer, intent(in) :: n, m
+  real, intent(out) :: b(size(a, 1))
 
-  subroutine foo(x, y, r1, r2)
-    integer, intent(in) :: x, y
-    integer, intent(out) :: r1, r2
-    procedure (op) add1, add2
-    procedure (op), pointer::p
-    p=>add1
-    call p(x, y, r1)
-    p=>add2
-    call p(x, y, r2)
-  end subroutine
-end module
+  integer :: i
 
-subroutine add1(x, y, z)
-  integer, intent(in) :: x, y
-  integer, intent(out) :: z
-  z = x + y
+  do i = 1, size(b)
+    b(i) = sum(a(i,:))
+  enddo
 end subroutine
 
-subroutine add2(x, y, z)
-  integer, intent(in) :: x, y
-  integer, intent(out) :: z
-  z = x + 2 * y
-end subroutine
+subroutine trans(x,y)
+  implicit none
+  real, intent(in), dimension(:,:) :: x
+  real, intent(out), dimension( size(x,2), size(x,1) ) :: y
+  integer :: N, M, i, j
+  N = size(x,1)
+  M = size(x,2)
+  DO i=1,N
+     do j=1,M
+        y(j,i) = x(i,j)
+     END DO
+  END DO
+end subroutine trans
+
+subroutine flatten(x,y)
+  implicit none
+  real, intent(in), dimension(:,:) :: x
+  real, intent(out), dimension( size(x) ) :: y
+  integer :: N, M, i, j, k
+  N = size(x,1)
+  M = size(x,2)
+  k = 1
+  DO i=1,N
+     do j=1,M
+        y(k) = x(i,j)
+        k = k + 1
+     END DO
+  END DO
+end subroutine flatten
